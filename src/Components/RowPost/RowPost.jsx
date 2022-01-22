@@ -1,76 +1,61 @@
-import React from 'react'
+import axios from '../../axios';
+import { imageUrl,API_KEY } from '../../constants/constants'
+import YouTube from 'react-youtube';
+import React, { useEffect, useState } from 'react'
 import './RowPost.css'
-function RowPost() {
+
+function RowPost(props) {
+    const [movies, setMovies] = useState([]);
+    const [UrlId, setUrlId] = useState('');
+
+    useEffect(() => {
+        axios.get(props.url).then((response) => {
+            console.log(response.data);
+            setMovies(response.data.results)
+        })
+    }, []);
+
+    const opts = {
+        height: '390',
+        width: '100%',
+        playerVars: {
+            
+            autoplay: 1,
+        },
+    };
+
+
+    const MovieTrailer = (id)=>{
+
+        console.log(id);
+        axios.get(`/movie/${id}/videos?api_key=${API_KEY}`).then((response)=>{
+
+            console.log(response.data)
+
+
+            if(response.data.results.length!==0)
+            {
+                setUrlId(response.data.results[0])
+            }
+            else{
+                console.log('No Trailer');
+            }
+
+        });
+
+    }
+
     return (
         <div className='row'>
-            <h2>Title-1</h2>
+
+            <h2>{props.title}</h2>
             <div className='posters'>
-                <img className='poster' alt='poster' src='stranger-thing1.jpg' />
-                <img className='poster' alt='poster' src='daredevil.jpg' />
-                <img className='poster' alt='poster' src='dark.jpg' />
-                <img className='poster' alt='poster' src='money.jpg' />
-                <img className='poster' alt='poster' src='squidgame.jpg' />
-                <img className='poster' alt='poster' src='thewitcher.jpg' />
-                <img className='poster' alt='poster' src='walking dead.jpg' />
-                <img className='poster' alt='poster' src='littilethings.jpg' />
-                <img className='poster' alt='poster' src='kotafactory.jpg' />
-                <img className='poster' alt='poster' src='friends.jpg' />
-                <img className='poster' alt='poster' src='stranger-thing1.jpg' />
-                <img className='poster' alt='poster' src='daredevil.jpg' />
-                <img className='poster' alt='poster' src='dark.jpg' />
-                <img className='poster' alt='poster' src='money.jpg' />
-                <img className='poster' alt='poster' src='squidgame.jpg' />
-                <img className='poster' alt='poster' src='thewitcher.jpg' />
-                <img className='poster' alt='poster' src='walking dead.jpg' />
-                <img className='poster' alt='poster' src='littilethings.jpg' />
-                <img className='poster' alt='poster' src='kotafactory.jpg' />
-                <img className='poster' alt='poster' src='friends.jpg' />
-                <img className='poster' alt='poster' src='stranger-thing1.jpg' />
-                <img className='poster' alt='poster' src='daredevil.jpg' />
-                <img className='poster' alt='poster' src='dark.jpg' />
-                <img className='poster' alt='poster' src='money.jpg' />
-                <img className='poster' alt='poster' src='squidgame.jpg' />
-                <img className='poster' alt='poster' src='thewitcher.jpg' />
-                <img className='poster' alt='poster' src='walking dead.jpg' />
-                <img className='poster' alt='poster' src='littilethings.jpg' />
-                <img className='poster' alt='poster' src='kotafactory.jpg' />
-                <img className='poster' alt='poster' src='friends.jpg' />
-                
+                {movies.map((obj) =>
+                    <img onClick={()=> MovieTrailer(obj.id)} className={props.isSmall ? 'smallposter' : 'poster'} alt='poster' src={`${imageUrl + obj.backdrop_path}`} />
+                )}
+
             </div>
-            <br />
-            <h2>Title-2</h2>
-            <div className='posters'>
-                <img className='poster' alt='poster' src='unlisted.jpg' />
-                <img className='poster' alt='poster' src='titans.jpg' />
-                <img className='poster' alt='poster' src='lockeandkey.jpg' />
-                <img className='poster' alt='poster' src='the100.jpg' />
-                <img className='poster' alt='poster' src='aranayak.jpg' />
-                <img className='poster' alt='poster' src='bigbang.jpg' />
-                <img className='poster' alt='poster' src='peakyblinders.jpg' />
-                <img className='poster' alt='poster' src='thesilentsea.jpg' />
-                <img className='poster' alt='poster' src='pabloescobar.jpg' />
-                <img className='poster' alt='poster' src='lostinspace.jpg' />
-                <img className='poster' alt='poster' src='unlisted.jpg' />
-                <img className='poster' alt='poster' src='titans.jpg' />
-                <img className='poster' alt='poster' src='lockeandkey.jpg' />
-                <img className='poster' alt='poster' src='the100.jpg' />
-                <img className='poster' alt='poster' src='aranayak.jpg' />
-                <img className='poster' alt='poster' src='bigbang.jpg' />
-                <img className='poster' alt='poster' src='peakyblinders.jpg' />
-                <img className='poster' alt='poster' src='thesilentsea.jpg' />
-                <img className='poster' alt='poster' src='pabloescobar.jpg' />
-                <img className='poster' alt='poster' src='lostinspace.jpg' />
-                <img className='poster' alt='poster' src='unlisted.jpg' />
-                <img className='poster' alt='poster' src='titans.jpg' />
-                <img className='poster' alt='poster' src='lockeandkey.jpg' />
-                <img className='poster' alt='poster' src='the100.jpg' />
-                <img className='poster' alt='poster' src='aranayak.jpg' />
-                <img className='poster' alt='poster' src='bigbang.jpg' />
-                <img className='poster' alt='poster' src='peakyblinders.jpg' />
-                <img className='poster' alt='poster' src='thesilentsea.jpg' />
-                <img className='poster' alt='poster' src='pabloescobar.jpg' />
-                <img className='poster' alt='poster' src='lostinspace.jpg' />
-            </div>
+            { UrlId && <YouTube videoId={UrlId.key} opts={opts}/>}
         </div>
     )
 }
